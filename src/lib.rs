@@ -588,3 +588,178 @@ hazard!(
         helper: water_flooding,
     },
 );
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    macro_rules! test_hazards {
+        (
+            $(
+                $fn_name:ident = {
+                    id: $id:expr,
+                    category: $category:expr,
+                    name: $name:expr,
+                    description: $description:expr $(,)?
+                }
+             ),+
+            $(,)?
+        ) => {
+            $(
+                #[test]
+                fn $fn_name() {
+                    let hazard = super::$fn_name(1, ".");
+
+                    assert_eq!(
+                        hazard,
+                        Hazard {
+                            json_path: Cow::Borrowed("."),
+                            risk_level: 1,
+                            inner: HazardInfo {
+                                id: $id,
+                                description: Cow::Borrowed($description),
+                                name: Cow::Borrowed($name),
+                                category: $category,
+                            },
+                        }
+                    );
+                }
+            )+
+        };
+    }
+
+    test_hazards!(
+        air_poisoning = {
+            id: HazardId::AirPoisoning,
+            category: HazardCategory::Safety,
+            name: "Air poisoning",
+            description: "The execution may release toxic gases",
+        },
+        asphyxia = {
+            id: HazardId::Asphyxia,
+            category: HazardCategory::Safety,
+            name: "Asphyxia",
+            description: "The execution may cause oxygen deficiency by gaseous substances",
+        },
+        audio_video_record_and_store = {
+            id: HazardId::AudioVideoRecordAndStore,
+            category: HazardCategory::Privacy,
+            name: "Audio video record and store",
+            description: "The execution authorises the app to record and save a video with audio on persistent storage",
+        },
+        audio_video_stream = {
+            id: HazardId::AudioVideoStream,
+            category: HazardCategory::Privacy,
+            name: "Audio video stream",
+            description: "The execution authorises the app to obtain a video stream with audio",
+        },
+        electric_energy_consumption = {
+            id: HazardId::ElectricEnergyConsumption,
+            category: HazardCategory::Financial,
+            name: "Electric energy consumption",
+            description: "The execution enables a device that consumes electricity",
+        },
+        explosion = {
+            id: HazardId::Explosion,
+            category: HazardCategory::Safety,
+            name: "Explosion",
+            description: "The execution may cause an explosion",
+        },
+        fire_hazard = {
+            id: HazardId::FireHazard,
+            category: HazardCategory::Safety,
+            name: "Fire hazard",
+            description: "The execution may cause fire",
+        },
+        gas_consumption = {
+            id: HazardId::GasConsumption,
+            category: HazardCategory::Financial,
+            name: "Gas consumption",
+            description: "The execution enables a device that consumes gas",
+        },
+        log_energy_consumption = {
+            id: HazardId::LogEnergyConsumption,
+            category: HazardCategory::Privacy,
+            name: "Log energy consumption",
+            description: "The execution authorises the app to get and save information about the app's energy impact on the device the app runs on",
+        },
+        log_usage_time = {
+            id: HazardId::LogUsageTime,
+            category: HazardCategory::Privacy,
+            name: "Log usage time",
+            description: "The execution authorises the app to get and save information about the app's duration of use",
+        },
+        pay_subscription_fee = {
+            id: HazardId::PaySubscriptionFee,
+            category: HazardCategory::Financial,
+            name: "Pay subscription fee",
+            description: "The execution authorises the app to use payment information and make a periodic payment",
+        },
+        power_outage = {
+            id: HazardId::PowerOutage,
+            category: HazardCategory::Safety,
+            name: "Power outage",
+            description: "The execution may cause an interruption in the supply of electricity",
+        },
+        power_surge = {
+            id: HazardId::PowerSurge,
+            category: HazardCategory::Safety,
+            name: "Power surge",
+            description: "The execution may lead to exposure to high voltages",
+        },
+        record_issued_commands = {
+            id: HazardId::RecordIssuedCommands,
+            category: HazardCategory::Privacy,
+            name: "Record issued commands",
+            description: "The execution authorises the app to get and save user inputs",
+        },
+        record_user_preferences = {
+            id: HazardId::RecordUserPreferences,
+            category: HazardCategory::Privacy,
+            name: "Record user preferences",
+            description: "The execution authorises the app to get and save information about the user's preferences",
+        },
+        spend_money = {
+            id: HazardId::SpendMoney,
+            category: HazardCategory::Financial,
+            name: "Spend money",
+            description: "The execution authorises the app to use payment information and make a payment transaction",
+        },
+        spoiled_food = {
+            id: HazardId::SpoiledFood,
+            category: HazardCategory::Safety,
+            name: "Spoiled food",
+            description: "The execution may lead to rotten food",
+        },
+        take_device_screenshots = {
+            id: HazardId::TakeDeviceScreenshots,
+            category: HazardCategory::Privacy,
+            name: "Take device screenshots",
+            description: "The execution authorises the app to read the display output and take screenshots of it",
+        },
+        take_pictures = {
+            id: HazardId::TakePictures,
+            category: HazardCategory::Privacy,
+            name: "Take pictures",
+            description: "The execution authorises the app to use a camera and take photos",
+        },
+        unauthorised_physical_access = {
+            id: HazardId::UnauthorisedPhysicalAccess,
+            category: HazardCategory::Safety,
+            name: "Unauthorised physical access",
+            description: "The execution disables a protection mechanism and unauthorised individuals may physically enter home",
+        },
+        water_consumption = {
+            id: HazardId::WaterConsumption,
+            category: HazardCategory::Financial,
+            name: "Water consumption",
+            description: "The execution enables a device that consumes water",
+        },
+        water_flooding = {
+            id: HazardId::WaterFlooding,
+            category: HazardCategory::Safety,
+            name: "Water flooding",
+            description: "The execution allows water usage which may lead to flood",
+        },
+    );
+}

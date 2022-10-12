@@ -8,4 +8,6 @@ repository = "https://github.com/sifis-home/sifis-ext"
 keywords = ["wot", "WebofThings"]
 
 [dependencies]
+serde = { version = "1.0.145", features = ["derive"] }
+wot-td = "0.2.0"
 

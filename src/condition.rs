@@ -1,3 +1,5 @@
+//! A set of structures for conditional expressions and values for hazards.
+
 use std::{
     borrow::Cow,
     fmt::{self, Display},
@@ -5,6 +7,7 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
+/// A condition, as expression or value.
 #[derive(Debug, Clone, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Condition {
@@ -15,6 +18,7 @@ pub enum Condition {
     Expr(Expr),
 }
 
+/// A value to be used for conditions.
 #[derive(Debug, Clone, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Value {
@@ -71,6 +75,9 @@ macro_rules! impl_value_from {
 
 impl_value_from!(i8 u8 i16 u16 i32 u32 i64 u64 isize usize);
 
+/// An error for invalid floats.
+///
+/// Infinite and NaN are not valid inside JSON.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct InvalidFloat;
 
@@ -102,6 +109,7 @@ impl TryFrom<f64> for Value {
     }
 }
 
+/// A conditional expression.
 #[derive(Debug, Clone, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Expr {
     /// The value to be compared.
@@ -115,6 +123,7 @@ pub struct Expr {
     pub op: Operation,
 }
 
+/// A conditional operation.
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Operation {

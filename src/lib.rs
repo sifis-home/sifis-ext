@@ -242,9 +242,16 @@ use wot_td::extend::ExtendableThing;
 /// [`Thing`]: wot_td::Thing
 #[derive(Debug, Default, Clone, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Sifis {
+    /// A set of possible risks used by the thing.
     #[serde(skip_serializing_if = "Vec::is_empty", rename = "sho:risks", default)]
     pub risks: Vec<risk::Detail>,
 
+    /// The hazards for the thing.
+    ///
+    /// Each hazard is associated with a condition and a risk id, which is expected to be defined
+    /// inside [`risks`].
+    ///
+    /// [`risks`]: Sifis::risks
     #[serde(skip_serializing_if = "Vec::is_empty", rename = "sho:hazards", default)]
     pub hazards: Vec<Hazard>,
 }

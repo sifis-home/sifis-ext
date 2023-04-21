@@ -1,3 +1,5 @@
+//! Hazard-related structures.
+
 use std::{borrow::Cow, ops::Deref};
 
 use serde::{Deserialize, Serialize};
@@ -7,13 +9,34 @@ use crate::condition;
 /// An hazard element.
 #[derive(Debug, Clone, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Hazard {
+    /// The associated risk.
     #[serde(rename = "sho:risk")]
     pub risk: Risk,
 
+    /// The set of conditions that are required in order to trigger the hazard.
+    ///
+    /// There are two nested levels of vectors. The inner one express a logic `AND` between
+    /// [`Condition`]s, the outer one express a logic `OR` between sets of conditions.
+    ///
+    /// For instance, this case:
+    /// ```ignore
+    /// let conditions = vec![
+    ///     vec![A, B],
+    ///     vec![C],
+    ///     vec![D, E, F],
+    /// ];
+    /// ```
+    /// is equivalent to `(A && B) || C || (D && E && F)`.
     #[serde(rename = "sho:conditions")]
     pub conditions: Vec<Vec<Condition>>,
 }
 
+/// The risk associated with the hazard, with the level of risk.
+///
+/// This structure only contains the `id` of the risk and not all its details. These are available
+/// in [`risk::Detail`] instead.
+///
+/// [`risk::Detail`]: crate::risk::Detail
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Risk {
     /// The id of the associated risk.
@@ -25,6 +48,7 @@ pub struct Risk {
     pub level: u8,
 }
 
+/// A condition that needs to be satisfied based on the data available from the Thing.
 #[derive(Debug, Clone, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Condition {
     /// The JSON pointer for the expression to be evaluated.
@@ -33,7 +57,7 @@ pub struct Condition {
     #[serde(rename = "sho:pointer")]
     pub pointer: JsonPointer,
 
-    /// The condition that need to be satisfied.
+    /// The condition that needs to be satisfied.
     #[serde(rename = "sho:condition")]
     pub condition: condition::Condition,
 }
@@ -42,6 +66,7 @@ pub struct Condition {
 #[derive(Debug, Clone, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct JsonPointer(pub(crate) jsonptr::Pointer);
 
+/// An error caused by an invalid JSON pointer.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct InvalidJsonPointer<'a>(Cow<'a, str>);
 

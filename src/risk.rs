@@ -1,9 +1,12 @@
+//! The complete information for risks.
+
 use std::borrow::Cow;
 
 use serde::{Deserialize, Serialize};
 
 use crate::hazard;
 
+/// The details of a risk.
 #[derive(Debug, Clone, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Detail {
     #[serde(rename = "@id")]

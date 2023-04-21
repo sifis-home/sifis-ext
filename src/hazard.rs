@@ -128,6 +128,10 @@ pub enum Id {
     #[serde(rename = "sho:AudioVideoStream")]
     AudioVideoStream,
 
+    /// Burn
+    #[serde(rename = "sho:Burn")]
+    Burn,
+
     /// Electric energy consumption
     #[serde(rename = "sho:ElectricEnergyConsumption")]
     ElectricEnergyConsumption,
@@ -171,6 +175,10 @@ pub enum Id {
     /// Record user preferences
     #[serde(rename = "sho:RecordUserPreferences")]
     RecordUserPreferences,
+
+    /// Scald
+    #[serde(rename = "sho:Scald")]
+    Scald,
 
     /// Spend money
     #[serde(rename = "sho:SpendMoney")]

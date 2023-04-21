@@ -94,6 +94,14 @@ risk!(
         category: hazard::Category::Privacy,
     },
 
+    /// A burn risk.
+    BURN = {
+        id: hazard::Id::Burn,
+        description: "The execution allows usage of devices that may cause burns",
+        name: "Burn",
+        category: hazard::Category::Safety,
+    },
+
     /// An electric energy consumption risk.
     ELECTRIC_ENERGY_CONSUMPTION = {
         id: hazard::Id::ElectricEnergyConsumption,
@@ -184,6 +192,14 @@ risk!(
             user's preferences",
         name: "Record user preferences",
         category: hazard::Category::Privacy,
+    },
+
+    /// Scalding risk.
+    SCALD = {
+        id: hazard::Id::Scald,
+        description: "The execution allows usage of devices that may cause scalds",
+        name: "Scald",
+        category: hazard::Category::Safety,
     },
 
     /// A spend money risk.
@@ -309,6 +325,13 @@ mod tests {
             name: "Audio video stream",
             description: "The execution authorises the app to obtain a video stream with audio",
         },
+        #[test = burn]
+        BURN = {
+            id: hazard::Id::Burn,
+            category: hazard::Category::Safety,
+            name: "Burn",
+            description: "The execution allows usage of devices that may cause burns",
+        },
         #[test = electric_energy_consumption]
         ELECTRIC_ENERGY_CONSUMPTION = {
             id: hazard::Id::ElectricEnergyConsumption,
@@ -392,6 +415,13 @@ mod tests {
             category: hazard::Category::Financial,
             name: "Spend money",
             description: "The execution authorises the app to use payment information and make a payment transaction",
+        },
+        #[test = scald]
+        SCALD = {
+            id: hazard::Id::Scald,
+            category: hazard::Category::Safety,
+            name: "Scald",
+            description: "The execution allows usage of devices that may cause scalds",
         },
         #[test = spoiled_food]
         SPOILED_FOOD = {

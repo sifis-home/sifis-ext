@@ -226,10 +226,12 @@
 
 #![warn(clippy::pedantic)]
 
+pub mod builder;
 pub mod condition;
 pub mod hazard;
 pub mod risk;
 
+pub use builder::Builder;
 use hazard::Hazard;
 use serde::{Deserialize, Serialize};
 use wot_td::extend::ExtendableThing;
@@ -254,6 +256,14 @@ pub struct Sifis {
     /// [`risks`]: Sifis::risks
     #[serde(skip_serializing_if = "Vec::is_empty", rename = "sho:hazards", default)]
     pub hazards: Vec<Hazard>,
+}
+
+impl Sifis {
+    #[inline]
+    #[must_use]
+    pub fn builder() -> Builder {
+        Builder::default()
+    }
 }
 
 impl ExtendableThing for Sifis {

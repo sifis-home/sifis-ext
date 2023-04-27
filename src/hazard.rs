@@ -4,7 +4,7 @@ use std::{borrow::Cow, ops::Deref};
 
 use serde::{Deserialize, Serialize};
 
-use crate::condition;
+use crate::{condition, risk};
 
 /// An hazard element.
 #[derive(Debug, Clone, Eq, Hash, PartialEq, Serialize, Deserialize)]
@@ -207,6 +207,37 @@ pub enum Id {
     /// Water flooding
     #[serde(rename = "sho:WaterFlooding")]
     WaterFlooding,
+}
+
+impl Id {
+    pub(crate) const fn risk(self) -> risk::Detail {
+        match self {
+            Id::AirPoisoning => risk::AIR_POISONING,
+            Id::Asphyxia => risk::ASPHYXIA,
+            Id::AudioVideoRecordAndStore => risk::AUDIO_VIDEO_RECORD_AND_STORE,
+            Id::AudioVideoStream => risk::AUDIO_VIDEO_STREAM,
+            Id::Burn => risk::BURN,
+            Id::ElectricEnergyConsumption => risk::ELECTRIC_ENERGY_CONSUMPTION,
+            Id::Explosion => risk::EXPLOSION,
+            Id::FireHazard => risk::FIRE_HAZARD,
+            Id::GasConsumption => risk::GAS_CONSUMPTION,
+            Id::LogEnergyConsumption => risk::LOG_ENERGY_CONSUMPTION,
+            Id::LogUsageTime => risk::LOG_USAGE_TIME,
+            Id::PaySubscriptionFee => risk::PAY_SUBSCRIPTION_FEE,
+            Id::PowerOutage => risk::POWER_OUTAGE,
+            Id::PowerSurge => risk::POWER_SURGE,
+            Id::RecordIssuedCommands => risk::RECORD_ISSUED_COMMANDS,
+            Id::RecordUserPreferences => risk::RECORD_USER_PREFERENCES,
+            Id::Scald => risk::SCALD,
+            Id::SpendMoney => risk::SPEND_MONEY,
+            Id::SpoiledFood => risk::SPOILED_FOOD,
+            Id::TakeDeviceScreenshots => risk::TAKE_DEVICE_SCREENSHOTS,
+            Id::TakePictures => risk::TAKE_PICTURES,
+            Id::UnauthorisedPhysicalAccess => risk::UNAUTHORISED_PHYSICAL_ACCESS,
+            Id::WaterConsumption => risk::WATER_CONSUMPTION,
+            Id::WaterFlooding => risk::WATER_FLOODING,
+        }
+    }
 }
 
 /// The category of an hazard.

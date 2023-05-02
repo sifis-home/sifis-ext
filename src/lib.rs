@@ -259,6 +259,7 @@ pub struct Sifis {
 }
 
 impl Sifis {
+    /// Creates a [`Builder`] for the `Sifis` extension.
     #[inline]
     #[must_use]
     pub fn builder() -> Builder {

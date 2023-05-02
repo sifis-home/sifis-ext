@@ -56,7 +56,7 @@
 //!     serde_json::to_value(thing).unwrap(),
 //!     json!({
 //!         "@context": [
-//!             "https://www.w3.org/2019/wot/td/v1.1",
+//!             "https://www.w3.org/2022/wot/td/v1.1",
 //!             {
 //!                 "sho": "https://purl.org/sifis/hazards",
 //!             },

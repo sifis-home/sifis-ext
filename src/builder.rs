@@ -241,3 +241,231 @@ impl<'a, const NESTED: bool> PartialCondition<'a, NESTED> {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        condition::{self, Condition},
+        hazard::{self, Hazard},
+        risk::{EXPLOSION, FIRE_HAZARD},
+        Sifis,
+    };
+
+    #[test]
+    fn hazard_helper() {
+        let sifis = Sifis::builder()
+            .hazard(hazard::Id::FireHazard, 1, |cond| cond)
+            .hazard(hazard::Id::FireHazard, 3, |cond| cond)
+            .hazard(hazard::Id::Explosion, 4, |cond| cond)
+            .build();
+
+        assert_eq!(
+            sifis,
+            Sifis {
+                risks: vec![FIRE_HAZARD, EXPLOSION],
+                hazards: vec![
+                    Hazard {
+                        risk: hazard::Risk {
+                            id: hazard::Id::FireHazard,
+                            level: 1,
+                        },
+                        conditions: Vec::new(),
+                    },
+                    Hazard {
+                        risk: hazard::Risk {
+                            id: hazard::Id::FireHazard,
+                            level: 3,
+                        },
+                        conditions: Vec::new(),
+                    },
+                    Hazard {
+                        risk: hazard::Risk {
+                            id: hazard::Id::Explosion,
+                            level: 4,
+                        },
+                        conditions: Vec::new(),
+                    }
+                ],
+            },
+        );
+    }
+
+    #[test]
+    fn condition_and() {
+        let sifis = Sifis::builder()
+            .hazard(hazard::Id::FireHazard, 1, |cond| {
+                cond.when("/properties/prop1")
+                    .eq(5)
+                    .and("/properties/prop2")
+                    .gt(3)
+            })
+            .build();
+
+        assert_eq!(
+            sifis,
+            Sifis {
+                risks: vec![FIRE_HAZARD],
+                hazards: vec![Hazard {
+                    risk: hazard::Risk {
+                        id: hazard::Id::FireHazard,
+                        level: 1
+                    },
+                    conditions: vec![vec![
+                        hazard::Condition {
+                            pointer: "/properties/prop1".try_into().unwrap(),
+                            condition: Condition::Value(5.into()),
+                        },
+                        hazard::Condition {
+                            pointer: "/properties/prop2".try_into().unwrap(),
+                            condition: Condition::Expr(condition::Expr {
+                                value: 3.into(),
+                                op: condition::Operation::Gt,
+                            }),
+                        }
+                    ]],
+                }],
+            },
+        );
+    }
+
+    #[test]
+    fn condition_or() {
+        let sifis = Sifis::builder()
+            .hazard(hazard::Id::FireHazard, 1, |cond| {
+                cond.when("/properties/prop1")
+                    .eq(5)
+                    .or(|cond| cond.when("/properties/prop2").gt(3))
+            })
+            .build();
+
+        assert_eq!(
+            sifis,
+            Sifis {
+                risks: vec![FIRE_HAZARD],
+                hazards: vec![Hazard {
+                    risk: hazard::Risk {
+                        id: hazard::Id::FireHazard,
+                        level: 1
+                    },
+                    conditions: vec![
+                        vec![hazard::Condition {
+                            pointer: "/properties/prop1".try_into().unwrap(),
+                            condition: Condition::Value(5.into()),
+                        }],
+                        vec![hazard::Condition {
+                            pointer: "/properties/prop2".try_into().unwrap(),
+                            condition: Condition::Expr(condition::Expr {
+                                value: 3.into(),
+                                op: condition::Operation::Gt,
+                            }),
+                        }]
+                    ],
+                }],
+            },
+        );
+    }
+
+    #[test]
+    fn condition_mixed() {
+        let sifis = Sifis::builder()
+            .hazard(hazard::Id::FireHazard, 1, |cond| {
+                cond.when("/properties/prop1")
+                    .ge(3)
+                    .and("/properties/prop1")
+                    .lt(10)
+                    .or(|cond| {
+                        cond.when("/properties/prop2")
+                            .gt(5)
+                            .and("/properties/prop2")
+                            .le(15)
+                    })
+            })
+            .build();
+
+        assert_eq!(
+            sifis,
+            Sifis {
+                risks: vec![FIRE_HAZARD],
+                hazards: vec![Hazard {
+                    risk: hazard::Risk {
+                        id: hazard::Id::FireHazard,
+                        level: 1
+                    },
+                    conditions: vec![
+                        vec![
+                            hazard::Condition {
+                                pointer: "/properties/prop1".try_into().unwrap(),
+                                condition: Condition::Expr(condition::Expr {
+                                    value: 3.into(),
+                                    op: condition::Operation::Ge,
+                                }),
+                            },
+                            hazard::Condition {
+                                pointer: "/properties/prop1".try_into().unwrap(),
+                                condition: Condition::Expr(condition::Expr {
+                                    value: 10.into(),
+                                    op: condition::Operation::Lt,
+                                }),
+                            }
+                        ],
+                        vec![
+                            hazard::Condition {
+                                pointer: "/properties/prop2".try_into().unwrap(),
+                                condition: Condition::Expr(condition::Expr {
+                                    value: 5.into(),
+                                    op: condition::Operation::Gt,
+                                }),
+                            },
+                            hazard::Condition {
+                                pointer: "/properties/prop2".try_into().unwrap(),
+                                condition: Condition::Expr(condition::Expr {
+                                    value: 15.into(),
+                                    op: condition::Operation::Le,
+                                }),
+                            }
+                        ]
+                    ],
+                }],
+            },
+        );
+    }
+
+    #[test]
+    fn short_form() {
+        let sifis = Sifis::builder()
+            .fire_hazard(1, |cond| cond)
+            .fire_hazard(3, |cond| cond)
+            .explosion(4, |cond| cond)
+            .build();
+
+        assert_eq!(
+            sifis,
+            Sifis {
+                risks: vec![FIRE_HAZARD, EXPLOSION],
+                hazards: vec![
+                    Hazard {
+                        risk: hazard::Risk {
+                            id: hazard::Id::FireHazard,
+                            level: 1,
+                        },
+                        conditions: Vec::new(),
+                    },
+                    Hazard {
+                        risk: hazard::Risk {
+                            id: hazard::Id::FireHazard,
+                            level: 3,
+                        },
+                        conditions: Vec::new(),
+                    },
+                    Hazard {
+                        risk: hazard::Risk {
+                            id: hazard::Id::Explosion,
+                            level: 4,
+                        },
+                        conditions: Vec::new(),
+                    }
+                ],
+            },
+        );
+    }
+}

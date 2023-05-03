@@ -31,68 +31,22 @@
 //! };
 //!
 //! let thing = Thing::builder("My Thing")
-//!     .ext(Sifis {
-//!         risks: vec![FIRE_HAZARD, EXPLOSION],
-//!         hazards: vec![
-//!             Hazard {
-//!                 risk: hazard::Risk {
-//!                     id: hazard::Id::FireHazard,
-//!                     level: 3,
-//!                 },
-//!                 conditions: vec![vec![
-//!                     hazard::Condition {
-//!                         pointer: "/properties/prop/inner1".try_into().unwrap(),
-//!                         condition: Condition::Expr(condition::Expr {
-//!                             value: 0.5.try_into().unwrap(),
-//!                             op: condition::Operation::Lt,
-//!                         }),
-//!                     },
-//!                     hazard::Condition {
-//!                         pointer: "/properties/prop/inner2".try_into().unwrap(),
-//!                         condition: Condition::Expr(condition::Expr {
-//!                             value: 6.into(),
-//!                             op: condition::Operation::Lt,
-//!                         }),
-//!                     },
-//!                 ]],
-//!             },
-//!             Hazard {
-//!                 risk: hazard::Risk {
-//!                     id: hazard::Id::FireHazard,
-//!                     level: 7,
-//!                 },
-//!                 conditions: vec![
-//!                     vec![hazard::Condition {
-//!                         pointer: "/properties/prop/inner1".try_into().unwrap(),
-//!                         condition: Condition::Expr(condition::Expr {
-//!                             value: 0.5.try_into().unwrap(),
-//!                             op: condition::Operation::Ge,
-//!                         }),
-//!                     }],
-//!                     vec![hazard::Condition {
-//!                         pointer: "/properties/prop/inner2".try_into().unwrap(),
-//!                         condition: Condition::Expr(condition::Expr {
-//!                             value: 6.into(),
-//!                             op: condition::Operation::Ge,
-//!                         }),
-//!                     }],
-//!                 ],
-//!             },
-//!             Hazard {
-//!                 risk: hazard::Risk {
-//!                     id: hazard::Id::Explosion,
-//!                     level: 1,
-//!                 },
-//!                 conditions: vec![vec![hazard::Condition {
-//!                     pointer: "/properties/prop/inner1".try_into().unwrap(),
-//!                     condition: Condition::Expr(condition::Expr {
-//!                         value: 0.9.try_into().unwrap(),
-//!                         op: condition::Operation::Ge,
-//!                     }),
-//!                 }]],
-//!             },
-//!         ],
-//!     })
+//!     .ext(
+//!         Sifis::builder()
+//!             .fire_hazard(3, |cond| {
+//!                 cond.when("/properties/prop/inner1")
+//!                     .lt(0.5)
+//!                     .and("/properties/prop/inner2")
+//!                     .lt(6)
+//!             })
+//!             .fire_hazard(7, |cond| {
+//!                 cond.when("/properties/prop/inner1")
+//!                     .ge(0.5)
+//!                     .or(|cond| cond.when("/properties/prop/inner2").ge(6))
+//!             })
+//!             .explosion(1, |cond| cond.when("/properties/prop/inner1").ge(0.9))
+//!             .build(),
+//!     )
 //!     .finish_extend()
 //!     .context_map(|b| b.context("sho", "https://purl.org/sifis/hazards"))
 //!     .property("prop", |b| {

@@ -27,7 +27,11 @@ pub struct Hazard {
     /// ];
     /// ```
     /// is equivalent to `(A && B) || C || (D && E && F)`.
-    #[serde(rename = "sho:conditions")]
+    #[serde(
+        rename = "sho:conditions",
+        skip_serializing_if = "Vec::is_empty",
+        default
+    )]
     pub conditions: Vec<Vec<Condition>>,
 }
 
@@ -255,4 +259,55 @@ pub enum Category {
     /// Safety
     #[serde(rename = "sho:Safety")]
     Safety,
+}
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use crate::hazard;
+
+    use super::*;
+
+    #[test]
+    fn serialize_hazard_without_conditions() {
+        let hazard = Hazard {
+            risk: Risk {
+                id: hazard::Id::FireHazard,
+                level: 3,
+            },
+            conditions: Vec::new(),
+        };
+
+        assert_eq!(
+            serde_json::to_value(hazard).unwrap(),
+            json!({
+                "sho:risk": {
+                    "@id": "sho:FireHazard",
+                    "sho:level": 3,
+                },
+            }),
+        );
+    }
+
+    #[test]
+    fn deserialize_hazard_without_conditions() {
+        let hazard = json!({
+            "sho:risk": {
+                "@id": "sho:FireHazard",
+                "sho:level": 3,
+            },
+        });
+
+        assert_eq!(
+            serde_json::from_value::<Hazard>(hazard).unwrap(),
+            Hazard {
+                risk: Risk {
+                    id: hazard::Id::FireHazard,
+                    level: 3,
+                },
+                conditions: Vec::new(),
+            },
+        );
+    }
 }
